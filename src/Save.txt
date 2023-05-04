@@ -1,0 +1,4 @@
+Name = name
+Level = 0
+Inventory = ajwbdkawbdkahsd
+Endings = false, false, false, false, false

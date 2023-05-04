@@ -1,5 +1,3 @@
-import java.util.*;
-
 public class Player {
 
     public String name;
@@ -16,6 +14,20 @@ public class Player {
 
     public void equipWeapon(Weapon newWeapon) {
         equippedWeapon = newWeapon;
+    }
+
+    public int attack() {
+        boolean crit = false;
+        int damage = randomNumber(equippedWeapon.baseDamage - equippedWeapon.damageRange, equippedWeapon.baseDamage + equippedWeapon.damageRange);
+        if (randomNumber(1, equippedWeapon.critChance) == 1) {
+            crit = true;
+        }
+        if (crit) {
+            System.out.println("A critical hit!");
+            double tempDamage = (double)(damage) * 1.75;
+            damage = (int)(tempDamage);
+        }
+        return damage;
     }
 
     public void damage(int amount) {
@@ -39,6 +51,10 @@ public class Player {
             Thread.sleep(25);
         }
         System.out.println();
+    }
+
+    private int randomNumber(int min, int max) {
+        return ((int)(Math.random() * ((max-min) + 1))) + min;
     }
 
 }
