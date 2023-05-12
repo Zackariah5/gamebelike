@@ -2,30 +2,57 @@ import java.util.ArrayList;
 
 public class Room {
 
-    public enum Direction { NORTH, SOUTH, EAST, WEST }
+    public ArrayList<Item> items; //The items able to be searched and found in a room by a player
+    public ArrayList<Game.Direction> doors; //The directions that have exits to another room or elsewhere, should always have at least 1 direction
 
-    public String name;
-    private ArrayList<Item> items;
-    public ArrayList<String> directions;
-
-    public Room(String name, ArrayList<Item> items) {
-        this.name = name;
+    public Room(ArrayList<Item> items, ArrayList<Game.Direction> doors) {
+        this.doors = doors;
         this.items = items;
     }
 
-    public ArrayList<Item> search() {
-        if (items.size() == 0) {
-            System.out.println("There are no items to be found.");
-        } else {
-            System.out.print("You found the following item(s): ");
-            for (int i = 0; i < items.size(); i++) {
-                System.out.print(items.get(i) + ", ");
+    public void addDoor(Game.Direction door) {
+        doors.add(door);
+    }
+
+    public void removeDoor(Game.Direction door) {
+        for (int i = 0; i < doors.size(); i++) {
+            if (doors.get(i).equals(door)) {
+                doors.remove(i);
+                i--;
             }
-            System.out.println();
         }
-        ArrayList<Item> tempList = new ArrayList<>(items);
-        items.clear();
-        return tempList;
+    }
+
+    public void display() {
+        if (doors.contains(Game.Direction.NORTH)) {
+            System.out.println("==| |==");
+        } else {
+            System.out.println("=======");
+        }
+        System.out.println("|     |");
+        if (doors.contains(Game.Direction.WEST) && doors.contains(Game.Direction.EAST)) {
+            System.out.println("=     =");
+            System.out.println();
+            System.out.println("=     =");
+        } else if (doors.contains(Game.Direction.EAST)) {
+            System.out.println("|     =");
+            System.out.println("|");
+            System.out.println("|     =");
+        } else if (doors.contains(Game.Direction.WEST)) {
+            System.out.println("=     |");
+            System.out.println("      |");
+            System.out.println("=     |");
+        } else {
+            System.out.println("|     |");
+            System.out.println("|     |");
+            System.out.println("|     |");
+        }
+        System.out.println("|     |");
+        if (doors.contains(Game.Direction.SOUTH)) {
+            System.out.println("==| |==");
+        } else {
+            System.out.println("=======");
+        }
     }
 
 }

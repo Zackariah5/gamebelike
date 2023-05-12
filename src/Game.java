@@ -6,25 +6,24 @@ import java.util.Scanner;
 public class Game {
 
     public static int level = 0;
+    public static String name = "Zack";
+    public static int textSpeed = 50;
+
+    public enum Direction { NORTH, SOUTH, EAST, WEST }
 
     public static void main(String[] args) throws InterruptedException {
         Scanner input = new Scanner(System.in);
-        String[] endings = new String[]{"Refusal Ending", "Stubborn Ending", };
-        boolean[] endingsCompleted = new boolean[endings.length];
-        for (int i = 0; i < endingsCompleted.length; i++) {
-            endingsCompleted[i] = false;
-        }
-
+        String[] endings = new String[]{/*LIST OF ENDING NAMES GOES HERE*/};
+        boolean[] endingsCompleted = new boolean[]{/*BOOLEANS THAT ARE TRUE IF ENDING AT THAT INDEX IN endings ARRAY HAS BEEN COMPLETED*/};
         int choice;
-        String name = "Zack";
-
-        Player player = new Player("You");
-        NPC doctor = new NPC("Doctor");
+        Player player = new Player(name);
+        NPC doctor = new NPC("Dr. Pingry");
         ArrayList<Item> inventory = new ArrayList<>();
-
         while (true) {
             switch (level) {
                 case 0:
+                    doctor.name = "Doctor";
+                    player.name = "You";
                     dramaticText("You wake up in a hospital bed, your body feeling lighter than usual. With so many wires hooked up to you, there's no way you can leave the bed. You call out for help.");
                     player.speak("Hello?");
                     pause(5);
@@ -57,7 +56,7 @@ public class Game {
                     nextDialogue();
                     doctor.speak("At 11:34 AM on November 6, 2023, a solar flare of unmatched proportions wiped out all power on earth.\nAdditionally, nuclear warheads that had been lost detonated, destroying 99.99% of all life on Earth.");
                     player.speak("So how the hell did I survive?");
-                    doctor.speak("Somehow, the blast launched you and your wife directly into the US3, and the crew put you two in cryosleep.\nOther than a world leaders and billionaires, you two were among the only humans to survive the event.");
+                    doctor.speak("You don't remember? You and your wife volunteered for the first test of cryosleep technology.\nThat technology protected you from the blasts, and the power being used for your pods wasn't effected by the blasts.\nOther than a world leaders and billionaires, you two were among the only humans to survive the event.");
                     player.speak("My wife's alive? Where is she?");
                     doctor.speak("She is still asleep. We aren't ready to wake her yet.");
                     player.speak("Then why am I awake?");
@@ -90,28 +89,32 @@ public class Game {
                     pause(3);
                     doctor.speak("Well, yes. But rest assured we will provide you with resources to survive and succeed.");
                     nextDialogue();
-                    doctor.speak("So, " + player.name + ", will you help us restore humanity?");
-                    System.out.println("1. Yes\n2. No");
-                    choice = input.nextInt();
-                    while (choice != 1 && choice != 2) {
-                        System.out.println("It's a yes or no question, you have to pick one.");
+                    while (true) {
+                        doctor.speak("So, " + player.name + ", will you help us restore humanity?");
+                        System.out.println("1. Yes\n2. No");
                         choice = input.nextInt();
-                    }
-                    if (choice == 2) {
-                        System.out.println("Damn, okay. Then I guess we have no use for you anymore.");
-                        System.out.println("YOU DIED");
-                        continue;
+                        while (choice != 1 && choice != 2) {
+                            System.out.println("It's a yes or no question, dude.");
+                            choice = input.nextInt();
+                        }
+                        if (choice == 2) {
+                            System.out.println("Damn, okay. Then I guess we have no use for you anymore.");
+                            System.out.println("YOU DIED");
+                            nextDialogue();
+                        } else {
+                            break;
+                        }
                     }
                     player.speak("Yes.");
                     doctor.speak("Fantastic. Let's get you started. Take this sword.");
                     inventory.add(new Weapon("Basic Sword", "A basic sword made of flimsy steel.",25, 5, 10));
                     dramaticText("You received a Basic Sword!", 100);
-                    dramaticText("*To equip a weapon, go to your inventory and select your desired weapon.*", 25);
+                    dramaticText("*To equip a weapon, go to your inventory and select your desired weapon.*", 100);
                     nextDialogue();
                     doctor.speak("Take this as well, use it if you need.");
                     inventory.add(new HealingItem("First Aid Kit", "A kit containing all necessary materials for healing wounds. Heals 100% of your health when consumed.", 100));
                     dramaticText("You received a First Aid Kit!", 100);
-                    dramaticText("*To use an item or see what it does, go to your inventory and select your desired item.*", 25);
+                    dramaticText("*To use an item or see what it does, go to your inventory and select your desired item.*", 100);
                     nextDialogue();
                     doctor.speak("Here's the deal. In order to break into the dungeon we think your wife is,\nyou need to investigate some of their smaller bases first.\nIf you don't have any other questions, I can teleport you there now.");
                     player.speak("You can teleport people now? That's so sick.");
@@ -119,19 +122,90 @@ public class Game {
                     dramaticText("Suddenly, you begin to feel a floating sensation, as everything around you goes white. You wait.");
                     pause(3);
                     level++;
+                    //SAVE GAME HERE
                     System.out.println("Game Saved.");
+                    nextDialogue();
                 case 1:
-                    dramaticText("You end up at the bottom of a stairwell that you see leads outside. You are in a small room, with corridors extending each way.\nYour journey starts now.");
+                    if (inventory.isEmpty()) {
+                        inventory.add(new Weapon("Basic Sword", "A basic sword made of flimsy steel.",25, 5, 10));
+                        inventory.add(new HealingItem("First Aid Kit", "A kit containing all necessary materials for healing wounds. Heals 100% of your health when consumed.", 100));
+                    }
+                    Dungeon dungeon = new Dungeon();
+                    dramaticText("You end up at the bottom of a stairwell that you see leads outside. You are in a small room, with adjacent rooms each way.\nYour journey starts now.");
                     level++;
                     player.name = name;
-                    doctor.name = "Dr. Pingry";
-                    inventory.add(new Weapon("Basic Sword", "A basic sword made of flimsy steel.",25, 5, 10));
-                    inventory.add(new HealingItem("First Aid Kit", "A kit containing all necessary materials for healing wounds. Heals 100% of your health when consumed.", 100));
+                    while (true) {
+                        ArrayList<Direction> tempList = new ArrayList<>();
+                        tempList.add(Direction.NORTH);
+                        tempList.add(Direction.WEST);
+                        Room temp = new Room(null, tempList);
+                        dungeon.addRoom(temp);
+                        dungeon.getRoom().display();
+                        System.out.println("""
+                                What would you like to do?
+                                1. Move
+                                2. Search Room
+                                3. Inventory
+                                4. Leave""");
+                        int tempChoiceOne = input.nextInt();
+                        while (tempChoiceOne < 1 || tempChoiceOne > 4) {
+                            System.out.println("Please select one of the four available options.");
+                            tempChoiceOne = input.nextInt();
+                        }
+                        switch (tempChoiceOne) {
+                            case 1 -> {
+                                System.out.println("""
+                                        Which direction would you like to go?
+                                        1. North
+                                        2. East
+                                        3. South
+                                        4. West""");
+                                int tempChoiceTwo = input.nextInt();
+                                while (tempChoiceTwo < 1 || tempChoiceTwo > 4) {
+                                    System.out.println("Please select one of the four available options.");
+                                    tempChoiceTwo = input.nextInt();
+                                }
+                                switch (tempChoiceTwo) {
+                                    case 1 -> dungeon.move(Direction.NORTH);
+                                    case 2 -> dungeon.move(Direction.EAST);
+                                    case 3 -> dungeon.move(Direction.SOUTH);
+                                    case 4 -> dungeon.move(Direction.WEST);
+                                }
+                            }
+                            case 2 -> searchRoom(dungeon.getRoom(), inventory);
+                            case 3 -> {
+                                //INVENTORY IMPLEMENTATION HERE
+                            }
+                            case 4 -> {
+                                //EXIT DUNGEON, GO BACK TO DOCTOR
+                            }
+                        }
+                    }
             }
         }
     }
 
-    public static void ending(String[] endings, int ending) {
+    public static void searchRoom(Room room, ArrayList<Item> inventory) {
+        ArrayList<Item> itemsFound = new ArrayList<>();
+        if (room.items.size() == 0) {
+            System.out.println("There are no items to be found.");
+        } else {
+            for (int i = 0; i < room.items.size(); i++) {
+                itemsFound.add(room.items.get(i));
+            }
+            System.out.print("You found the following item(s): ");
+            for (int i = 0; i < itemsFound.size(); i++) {
+                System.out.print(itemsFound.get(i) + ", ");
+            }
+            System.out.println();
+        }
+        for (int i = 0; i < itemsFound.size(); i++) {
+            inventory.add(itemsFound.get(i));
+        }
+        room.items.clear();
+    }
+
+    public static void ending(String[] endings, int endingIndex) {
 
     }
 
@@ -152,7 +226,7 @@ public class Game {
     public static void dramaticText(String text) throws InterruptedException {
         for (int i = 0; i < text.length(); i++) {
             System.out.print(text.charAt(i));
-            Thread.sleep(25);
+            Thread.sleep(textSpeed);
         }
         System.out.println();
     }

@@ -1,4 +1,4 @@
-Name = name
+Name = Zack
 Level = 0
-Inventory = ajwbdkawbdkahsd
-Endings = false, false, false, false, false
+Inventory =
+Endings =

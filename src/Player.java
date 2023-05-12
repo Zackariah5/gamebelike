@@ -3,7 +3,7 @@ public class Player {
     public String name;
     public int maxHealth;
     public int health;
-    public Weapon equippedWeapon;
+    public Weapon equippedWeapon; //Can't be null
 
     public Player(String name) {
         this.name = name;
@@ -30,7 +30,7 @@ public class Player {
         return damage;
     }
 
-    public void damage(int amount) {
+    public void takeDamage(int amount) {
         health -= amount;
         if (health <= 0) {
             health = 0;
@@ -48,7 +48,7 @@ public class Player {
         System.out.print("You: ");
         for (int i = 0; i < text.length(); i++) {
             System.out.print(text.charAt(i));
-            Thread.sleep(25);
+            Thread.sleep(Game.textSpeed);
         }
         System.out.println();
     }
