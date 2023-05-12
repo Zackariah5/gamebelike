@@ -3,24 +3,32 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Game {
+public class Game /*Working Title*/ {
 
+    //Variables that apply everywhere and may extend to objects
     public static int level = 0;
     public static String name = "Zack";
     public static int textSpeed = 50;
 
+    //Directions of exits for rooms
     public enum Direction { NORTH, SOUTH, EAST, WEST }
 
+    //Dungeons
+    Dungeon dungeonOne = new Dungeon(5, 5, 5, 3);
+
     public static void main(String[] args) throws InterruptedException {
+
         Scanner input = new Scanner(System.in);
         String[] endings = new String[]{/*LIST OF ENDING NAMES GOES HERE*/};
         boolean[] endingsCompleted = new boolean[]{/*BOOLEANS THAT ARE TRUE IF ENDING AT THAT INDEX IN endings ARRAY HAS BEEN COMPLETED*/};
-        int choice;
         Player player = new Player(name);
         NPC doctor = new NPC("Dr. Pingry");
         ArrayList<Item> inventory = new ArrayList<>();
+
         while (true) {
+
             switch (level) {
+
                 case 0:
                     doctor.name = "Doctor";
                     player.name = "You";
@@ -92,7 +100,7 @@ public class Game {
                     while (true) {
                         doctor.speak("So, " + player.name + ", will you help us restore humanity?");
                         System.out.println("1. Yes\n2. No");
-                        choice = input.nextInt();
+                        int choice = input.nextInt();
                         while (choice != 1 && choice != 2) {
                             System.out.println("It's a yes or no question, dude.");
                             choice = input.nextInt();
@@ -125,6 +133,7 @@ public class Game {
                     //SAVE GAME HERE
                     System.out.println("Game Saved.");
                     nextDialogue();
+
                 case 1:
                     if (inventory.isEmpty()) {
                         inventory.add(new Weapon("Basic Sword", "A basic sword made of flimsy steel.",25, 5, 10));
@@ -181,6 +190,7 @@ public class Game {
                             }
                         }
                     }
+
             }
         }
     }
@@ -206,7 +216,7 @@ public class Game {
     }
 
     public static void ending(String[] endings, int endingIndex) {
-
+        //Code should trigger when an ending is gotten, record the ending gotten to the save file, and give option to restart at the beginning or previous level
     }
 
     public static void nextDialogue() {
