@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 public class Dungeon {
 
     public Room[][] rooms;
@@ -12,27 +10,12 @@ public class Dungeon {
         column = startingColumn;
     }
 
-    public Dungeon() {
-        int height = randomNumber(7, 13);
-        int width = randomNumber(7, 13);
-        rooms = new Room[height][width];
-        row = width/2;
-        column = height;
-    }
-
-    public void generate() {
-        ArrayList<Game.Direction> doors;
-        switch (randomNumber(1, 4)) {
-            case 1:
-        }
-    }
-
     public Room getRoom() {
         return rooms[row][column];
     }
 
-    public void addRoom(Room room, int x, int y) {
-        rooms[x][y] = room;
+    public void addRoom(Room room, int row, int column) {
+        rooms[row][column] = room;
     }
 
     public void addRoom(Room room) {
@@ -42,13 +25,13 @@ public class Dungeon {
     public void move(Game.Direction direction) {
         if (getRoom().doors.contains(direction)) {
             if (direction == Game.Direction.NORTH) {
-                column--;
-            } else if (direction == Game.Direction.EAST) {
-                row++;
-            } else if (direction == Game.Direction.SOUTH) {
-                column++;
-            } else {
                 row--;
+            } else if (direction == Game.Direction.EAST) {
+                column++;
+            } else if (direction == Game.Direction.SOUTH) {
+                row++;
+            } else {
+                column--;
             }
         } else {
             System.out.println("There is no door in that direction.");

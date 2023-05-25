@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class Game {
 
-    public static int level = 0;
+    public static int level = 1;
     public static String name = "Zack";
     public static int textSpeed = 50;
 
@@ -13,6 +13,7 @@ public class Game {
 
     public static void main(String[] args) throws InterruptedException {
         Scanner input = new Scanner(System.in);
+        new DungeonStorage();
         String[] endings = new String[]{/*LIST OF ENDING NAMES GOES HERE*/};
         boolean[] endingsCompleted = new boolean[]{/*BOOLEANS THAT ARE TRUE IF ENDING AT THAT INDEX IN endings ARRAY HAS BEEN COMPLETED*/};
         int choice;
@@ -126,21 +127,18 @@ public class Game {
                     System.out.println("Game Saved.");
                     nextDialogue();
                 case 1:
+                    Dungeon dungeonOne = DungeonStorage.dungeons[0];
                     if (inventory.isEmpty()) {
                         inventory.add(new Weapon("Basic Sword", "A basic sword made of flimsy steel.",25, 5, 10));
                         inventory.add(new HealingItem("First Aid Kit", "A kit containing all necessary materials for healing wounds. Heals 100% of your health when consumed.", 100));
                     }
-                    Dungeon dungeon = new Dungeon();
-                    dramaticText("You end up at the bottom of a stairwell that you see leads outside. You are in a small room, with adjacent rooms each way.\nYour journey starts now.");
+                   // dramaticText("You end up at the bottom of a stairwell that you see leads outside. You are in a small room, with adjacent rooms each way.\nYour journey starts now.");
                     level++;
                     player.name = name;
                     while (true) {
-                        ArrayList<Direction> tempList = new ArrayList<>();
-                        tempList.add(Direction.NORTH);
-                        tempList.add(Direction.WEST);
-                        Room temp = new Room(null, tempList);
-                        dungeon.addRoom(temp);
-                        dungeon.getRoom().display();
+                        System.out.println(dungeonOne.row);
+                        System.out.println(dungeonOne.column);
+                        dungeonOne.getRoom().display();
                         System.out.println("""
                                 What would you like to do?
                                 1. Move
@@ -166,13 +164,13 @@ public class Game {
                                     tempChoiceTwo = input.nextInt();
                                 }
                                 switch (tempChoiceTwo) {
-                                    case 1 -> dungeon.move(Direction.NORTH);
-                                    case 2 -> dungeon.move(Direction.EAST);
-                                    case 3 -> dungeon.move(Direction.SOUTH);
-                                    case 4 -> dungeon.move(Direction.WEST);
+                                    case 1 -> dungeonOne.move(Direction.NORTH);
+                                    case 2 -> dungeonOne.move(Direction.EAST);
+                                    case 3 -> dungeonOne.move(Direction.SOUTH);
+                                    case 4 -> dungeonOne.move(Direction.WEST);
                                 }
                             }
-                            case 2 -> searchRoom(dungeon.getRoom(), inventory);
+                            case 2 -> searchRoom(dungeonOne.getRoom(), inventory);
                             case 3 -> {
                                 //INVENTORY IMPLEMENTATION HERE
                             }
@@ -190,24 +188,20 @@ public class Game {
         if (room.items.size() == 0) {
             System.out.println("There are no items to be found.");
         } else {
-            for (int i = 0; i < room.items.size(); i++) {
-                itemsFound.add(room.items.get(i));
-            }
+            itemsFound.addAll(room.items);
             System.out.print("You found the following item(s): ");
             for (int i = 0; i < itemsFound.size(); i++) {
                 System.out.print(itemsFound.get(i) + ", ");
             }
             System.out.println();
         }
-        for (int i = 0; i < itemsFound.size(); i++) {
-            inventory.add(itemsFound.get(i));
-        }
+        inventory.addAll(itemsFound);
         room.items.clear();
     }
 
-    public static void ending(String[] endings, int endingIndex) {
+    //public static void ending(String[] endings, int endingIndex) {
 
-    }
+    //}
 
     public static void nextDialogue() {
         Scanner input = new Scanner(System.in);
