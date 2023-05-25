@@ -1,8 +1,7 @@
 public class Player {
 
     public String name;
-    public int maxHealth;
-    public int health;
+    public int maxHealth, health;
     public Weapon equippedWeapon; //Can't be null
 
     public Player(String name) {
@@ -48,7 +47,7 @@ public class Player {
         System.out.print("You: ");
         for (int i = 0; i < text.length(); i++) {
             System.out.print(text.charAt(i));
-            Thread.sleep(Game.textSpeed);
+            Thread.sleep(50);
         }
         System.out.println();
     }

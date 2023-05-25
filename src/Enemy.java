@@ -1,10 +1,7 @@
 public class Enemy {
 
   public String name;
-  public int health;
-  public int baseDamage;
-  public int damageRange;
-  public int critChance;
+  public int health, baseDamage, damageRange, critChance;
 
   public Enemy(String name, int health, int baseDamage, int damageRange, int critChance) {
     this.name = name;

@@ -10,7 +10,7 @@ public class NPC {
         System.out.print(name + ": ");
         for (int i = 0; i < text.length(); i++) {
             System.out.print(text.charAt(i));
-            Thread.sleep(Game.textSpeed);
+            Thread.sleep(50);
         }
         System.out.println();
     }

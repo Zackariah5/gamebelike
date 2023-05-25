@@ -1,4 +1,0 @@
-Name = Zack
-Level = 0
-Inventory =
-Endings =
