@@ -1,58 +1,42 @@
 //Game Created, Written, and Coded By Zachary Copans
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Game {
 
-    public static int level = 0;
+    public static int stage;
     public static String name = "";
+    public static int textSpeed = 25;
     public static Scanner input = new Scanner(System.in);
-    public static String[] endings = new String[]{/*LIST OF ENDING NAMES GOES HERE*/};
-    public static boolean[] endingsCompleted = new boolean[]{/*BOOLEANS THAT ARE TRUE IF ENDING AT THAT INDEX IN endings ARRAY HAS BEEN COMPLETED*/};
-    public enum Direction { NORTH, SOUTH, EAST, WEST }
+    public static String[] endings = new String[]{"Bad Ending", "Neutral Ending", "Good Ending", "Refusal Ending ", ""};
+    public static boolean[] endingsCompleted = new boolean[endings.length];
+    public static Player player = new Player(name);
+    public static Dungeon currentDungeon;
+    public static ArrayList<Item> availableItems = new ArrayList<>();
+    public enum Direction {NORTH, SOUTH, EAST, WEST}
 
-    public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(String[] args) throws InterruptedException, IOException, ClassNotFoundException {
         new DungeonStorage();
+
+        availableItems.add(new Weapon("Basic Sword", "A basic sword made of flimsy steel.", 25, 5, 10));
+
+
         //title();
         //anythingToContinue();
-        boolean menu = true;
-        while (menu) {
-            int choice;
-            switch (userInput("What would you like to do?\n1. New Game\n2. Load Game\n3. Settings\n4. Exit", 4)) {
-                case 1:
-                    choice = userInput("Are you sure? Making a new game will overwrite any data currently on the Save.txt file.\n1. Yes\n2. No", 2);
-                    if (choice == 1) {
-                        level = 0;
-                        name = "";
-                        saveGame("Save.txt");
-                        menu = false;
-                    }
-                    break;
-                case 2:
-                    loadGame("Save.txt");
-                    menu = false;
-                    break;
-                case 3:
-                    //SETTINGS HERE
-                    break;
-                case 4:
-                    choice = userInput("Would you like to save before exiting?\n1. Yes\n2. No", 2);
-                    if (choice == 1) {
-                        saveGame("Save.txt");
-                    }
-                    System.out.println("Thanks for playing!");
-                    System.exit(0);
-                    break;
-            }
-        }
-        Player player = new Player(name);
+        menu();
         NPC doctor = new NPC("Dr. Pingry");
-        ArrayList<Item> inventory = new ArrayList<>();
+        if (stage == 0) doctor.name = "Doctor";
         while (true) {
-            switch (level) {
+            switch (stage) {
                 case 0:
+                    /*
                     dramaticText("You wake up in a hospital bed, your body feeling lighter than usual. With so many wires hooked up to you, there's no way you can leave the bed. You call out for help.");
                     player.speak("Hello?");
                     pause(5);
@@ -68,14 +52,18 @@ public class Game {
                     doctor.speak("Holy shit! You're awake!");
                     player.speak("Where the hell am I?");
                     doctor.speak("Listen, I know you probably have a lot of questions right now, but I need you to tell me what you remember first. Let's start easy.\nWhat is your name?");
+
+                     */
+                    input.nextLine();
                     name = input.nextLine();
                     player.name = name;
-                    player.speak("I'm " + player.name + ".");
+                    /*
+                    player.speak("I'm " + player + ".");
                     doctor.speak("Okay, that's what we have on file, so that's good.\nAnd what year do you remember it being?");
                     player.speak("2023.");
                     doctor.speak("Oh my, well, I'm not sure how to tell you this, but it's 2132.");
                     player.speak("How the fuck is that even possible?");
-                    doctor.speak("Please, " + player.name + ", watch your language. Mr. Georgio will be playing this.");
+                    doctor.speak("Please, " + player + ", watch your language. Mr. Georgio will be playing this.");
                     player.speak("Who the hell is \"Mr. Georgio\"? Also, I'm like 99% sure you said \"shit\" like 10 lines of code ago, but whatever. Who the hell are you?");
                     doctor.speak("I'm Dr. Pingry.");
                     player.speak("Then why the hell does it just say \"Doctor\" for your dialogue?");
@@ -118,68 +106,188 @@ public class Game {
                     pause(3);
                     doctor.speak("Well, yes. But rest assured we will provide you with resources to survive and succeed.");
                     anythingToContinue();
-                    while (true) {
-                        int choice = userInput("So, " + player.name + ", will you help us restore humanity?\n1. Yes\n2. No", 2);
-                        if (choice == 2) {
-                            System.out.println("Damn, okay. Then I guess we have no use for you anymore.");
-                            System.out.println("YOU DIED");
-                            anythingToContinue();
-                        } else {
-                            break;
-                        }
+                    int choice = userInput("So, " + player + ", will you help us restore humanity?\n1. Yes\n2. No", 2);
+                    if (choice == 2) {
+                        dramaticText("Oh.");
+                        pause(3);
+                        dramaticText("Okay. Then I guess we have no need for you anymore.");
+                        dramaticText("The doctor shoots you, leaving you dead on the floor.");
+                        dramaticText("YOU DIED");
+                        //Gain refusal ending
                     }
                     player.speak("Yes.");
                     doctor.speak("Fantastic. Let's get you started. Take this sword.");
-                    inventory.add(new Weapon("Basic Sword", "A basic sword made of flimsy steel.",25, 5, 10));
-                    dramaticText("You received a Basic Sword!", 100);
-                    dramaticText("*To equip a weapon, go to your inventory and select your desired weapon.*", 100);
+
+                     */
+                    player.inventory.add(new Weapon("Basic Sword", "A basic sword made of flimsy steel.", 25, 5, 10));
+                    /*
+                    dramaticText("You received a Basic Sword!");
+                    dramaticText("*To equip a weapon, go to your inventory and select your desired weapon.*");
                     anythingToContinue();
                     doctor.speak("Take this as well, use it if you need.");
-                    inventory.add(new HealingItem("First Aid Kit", "A kit containing all necessary materials for healing wounds. Heals 100% of your health when consumed.", 100));
-                    dramaticText("You received a First Aid Kit!", 100);
-                    dramaticText("*To use an item or see what it does, go to your inventory and select your desired item.*", 100);
+
+                     */
+                    player.inventory.add(new HealingItem("First Aid Kit", "A kit containing all necessary materials for healing wounds. Heals 100% of your health when consumed.", 100));
+                    /*
+                    dramaticText("You received a First Aid Kit!");
+                    dramaticText("*To use an item or see what it does, go to your inventory and select your desired item.*");
                     anythingToContinue();
                     doctor.speak("Here's the deal. In order to break into the dungeon we think your wife is,\nyou need to investigate some of their smaller bases first.\nIf you don't have any other questions, I can teleport you there now.");
                     player.speak("You can teleport people now? That's so sick.");
                     doctor.speak("Focus, " + name + ". When you're ready to come back, press this button on wrist.\nUse it sparingly, we only have enough charge for the exact amount of trips we need.\nI'm sending you now. Good luck.");
                     dramaticText("Suddenly, you begin to feel a floating sensation, as everything around you goes white. You wait.");
                     pause(3);
-                    level++;
+
+                     */
+                    stage++;
                     saveGame("Save.txt");
                     anythingToContinue();
                 case 1:
-                    Dungeon dungeonOne = DungeonStorage.dungeons[0];
                     dramaticText("You end up at the bottom of a stairwell that you see leads outside. You are in a small room, with adjacent rooms each way.\nYour journey starts now.");
-                    while (true) {
-                        dungeonOne.getRoom().display();
-                        switch (userInput("What would you like to do?\n1. Move\n2. Search Room\n3. Inventory\n4. Leave", 4)) {
-                            case 1 -> {
-                                switch (userInput("Which direction would you like to go?\n1. North\n2. East\n3. South\n4. West", 4)) {
-                                    case 1 -> dungeonOne.move(Direction.NORTH);
-                                    case 2 -> dungeonOne.move(Direction.EAST);
-                                    case 3 -> dungeonOne.move(Direction.SOUTH);
-                                    case 4 -> dungeonOne.move(Direction.WEST);
-                                }
-                            }
-                            case 2 -> searchRoom(dungeonOne.getRoom(), inventory);
-                            case 3 -> {
-                                //INVENTORY IMPLEMENTATION HERE
-                            }
-                            case 4 -> {
-                                //EXIT DUNGEON, GO BACK TO DOCTOR
-                            }
-                        }
-                    }
+                    System.out.println(name);
+                    gameLoop();
             }
         }
     }
 
-    public static int userInput (String prompt, int userChoices) {
+    public static void saveGame(String fileName) throws IOException {
+        PrintWriter output = new PrintWriter(new FileWriter(fileName, false));
+        output.println("Stage = " + stage);
+        output.println("Text Speed = " + textSpeed);
+        player.save();
+        currentDungeon.save();
+        output.close();
+    }
+
+    public static void loadGame(String fileName) throws IOException, ClassNotFoundException {
+        File inFile = new File(fileName);
+        Scanner textInput = new Scanner(inFile);
+        String line = textInput.nextLine();
+        stage = Integer.parseInt(line.substring(line.indexOf("=") + 2));
+        line = textInput.nextLine();
+        textSpeed = Integer.parseInt(line.substring(line.indexOf("=") + 2));
+        textInput.close();
+        currentDungeon = loadDungeon();
+        player = loadPlayer();
+    }
+
+    public static Player loadPlayer() throws IOException, ClassNotFoundException {
+        Player tempPlayer = null;
+        try {
+            FileInputStream fis = new FileInputStream("Player.tmp");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            tempPlayer = (Player) ois.readObject();
+            ois.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return tempPlayer;
+    }
+
+    public static Dungeon loadDungeon() throws IOException, ClassNotFoundException {
+        FileInputStream fis = new FileInputStream("Dungeon.tmp");
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        Dungeon tempDungeon = (Dungeon) ois.readObject();
+        ois.close();
+        return tempDungeon;
+    }
+
+    public static void menu() throws IOException, ClassNotFoundException {
+        while (true) {
+            int choice;
+            switch (userInput("What would you like to do?\n1. New Game\n2. Load Game\n3. Change Text Speed\n4. Exit", 4)) {
+                case 1 -> {
+                    choice = userInput("Are you sure? Making a new game will overwrite any data currently on the \"Save.txt\" file.\n1. Yes\n2. No", 2);
+                    if (choice == 1) {
+                        stage = 0;
+                        currentDungeon = DungeonStorage.dungeons[0];
+                        name = "";
+                        saveGame("Save.txt");
+                        return;
+                    }
+                }
+                case 2 -> {
+                    loadGame("Save.txt");
+                    return;
+                }
+                case 3 -> {
+                    switch (userInput("Select Text Speed:\n1. Very Slow\n2. Slow\n3. Medium\n4. Fast\n5. Very Fast", 5)) {
+                        case 1 -> textSpeed = 200;
+                        case 2 -> textSpeed = 100;
+                        case 3 -> textSpeed = 50;
+                        case 4 -> textSpeed = 25;
+                        case 5 -> textSpeed = 10;
+                    }
+                }
+                case 4 -> {
+                    choice = userInput("Would you like to save before exiting?\n1. Yes\n2. No", 2);
+                    if (choice == 1) saveGame("Save.txt");
+                    System.out.println("Thanks for playing!");
+                    System.exit(0);
+                    return;
+                }
+            }
+        }
+    }
+
+    public static void gameLoop() throws IOException {
+        boolean complete = false;
+        while (true) {
+            currentDungeon.getRoom().display();
+            switch (userInput("What would you like to do?\n1. Move\n2. Search Room\n3. Inventory\n4. Leave", 4)) {
+                case 1 -> {
+                    switch (userInput("Which direction would you like to go?\n1. North\n2. East\n3. South\n4. West", 4)) {
+                        case 1 -> currentDungeon.move(Direction.NORTH);
+                        case 2 -> currentDungeon.move(Direction.EAST);
+                        case 3 -> currentDungeon.move(Direction.SOUTH);
+                        case 4 -> currentDungeon.move(Direction.WEST);
+                    }
+                }
+                case 2 -> searchRoom(currentDungeon.getRoom());
+                case 3 -> {
+                    displayInventory();
+                    int chosenItemIndex = (userInput("What item would you like to use or inspect?", player.inventory.size() + 1)) - 1;
+                    if (chosenItemIndex != player.inventory.size()) {
+                        if (player.inventory.get(chosenItemIndex) instanceof Weapon) {
+                            if (player.inventory.get(chosenItemIndex).equals(player.equippedWeapon)) {
+                                System.out.println("This is your currently equipped weapon.");
+                            } else {
+                                if (userInput("Would you like to equip " + player.inventory.get(chosenItemIndex) + " as your weapon?\n1. Yes\n2. No", 2) == 1) {
+                                    player.equippedWeapon = (Weapon) player.inventory.get(chosenItemIndex);
+                                }
+                            }
+                        }
+                    }
+                }
+                case 4 -> {
+                    int choice;
+                    choice = userInput("Would you like to save before exiting?\n1. Yes\n2. No", 2);
+                    if (choice == 1) saveGame("Save.txt");
+                    System.out.println("Thanks for playing!");
+                    System.exit(0);
+                    return;
+                }
+            }
+            if (complete == true) {
+                return;
+            }
+        }
+    }
+
+    public static void displayInventory() {
+        for (int i = 0; i < player.inventory.size(); i++) {
+            System.out.println((i + 1) + ") " + player.inventory.get(i).name);
+        }
+        System.out.println("Enter " + (player.inventory.size() + 1) + " to go back.");
+    }
+
+    public static int userInput(String prompt, int userChoices) {
         int in;
         do {
             System.out.println(prompt);
-            try { in = Integer.parseInt(input.next()); }
-            catch (Exception e) {
+            try {
+                in = Integer.parseInt(input.next());
+            } catch (Exception e) {
                 in = -1;
                 System.out.println("Please enter an integer between 1 and " + userChoices + ".");
             }
@@ -187,24 +295,7 @@ public class Game {
         return in;
     }
 
-    public static void loadGame(String fileName) throws IOException {
-        File inFile = new File(fileName);
-        Scanner textInput = new Scanner(inFile);
-        String line = textInput.nextLine();
-        line = line.substring(line.indexOf("=") + 2);
-        level = Integer.parseInt(line);
-        line = textInput.nextLine();
-        name = line.substring(line.indexOf("=") + 2);
-    }
-
-    public static void saveGame(String fileName) throws IOException {
-        PrintWriter output = new PrintWriter(new FileWriter(fileName, false));
-        output.println("Level = " + level);
-        output.println("Name = " + name);
-        output.close();
-    }
-
-    public static void searchRoom(Room room, ArrayList<Item> inventory) {
+    public static void searchRoom(Room room) {
         ArrayList<Item> itemsFound = new ArrayList<>();
         if (room.items.size() == 0) {
             System.out.println("There are no items to be found.");
@@ -216,27 +307,8 @@ public class Game {
             }
             System.out.println();
         }
-        inventory.addAll(itemsFound);
+        player.inventory.addAll(itemsFound);
         room.items.clear();
-    }
-
-    public static void clearConsole() {
-        for (int i = 0; i < 100; i++) {
-            System.out.println();
-        }
-    }
-
-    public static void printSeparator(int size) {
-        for (int i = 0; i < size; i++) {
-            System.out.print("-");
-        }
-        System.out.println();
-    }
-
-    public static void printHeading(String title) {
-        printSeparator(30);
-        System.out.println(title);
-        printSeparator(30);
     }
 
     public static void anythingToContinue() {
@@ -244,18 +316,10 @@ public class Game {
         input.nextLine();
     }
 
-    public static void dramaticText(String text, int millisecondGap) throws InterruptedException {
-        for (int i = 0; i < text.length(); i++) {
-            System.out.print(text.charAt(i));
-            Thread.sleep(millisecondGap);
-        }
-        System.out.println();
-    }
-
     public static void dramaticText(String text) throws InterruptedException {
         for (int i = 0; i < text.length(); i++) {
             System.out.print(text.charAt(i));
-            Thread.sleep(50);
+            Thread.sleep(textSpeed);
         }
         System.out.println();
     }
@@ -269,10 +333,9 @@ public class Game {
         System.out.println();
     }
 
-    public static void title () throws InterruptedException {
-        printHeading("Welcome To:");
-        Thread.sleep(1000);
-        //https://fsymbols.com/generators/carty/
+    public static void title() throws InterruptedException {
+        dramaticText("Welcome To:");
+        Thread.sleep(2000);
         System.out.println("░██████╗░░█████╗░███╗░░░███╗███████╗░░░░░░░░██╗░█████╗░██╗░░░██╗░█████╗░");
         Thread.sleep(1000);
         System.out.println("██╔════╝░██╔══██╗████╗░████║██╔════╝░░░░░░░░██║██╔══██╗██║░░░██║██╔══██╗");
@@ -285,6 +348,6 @@ public class Game {
         Thread.sleep(1000);
         System.out.println("░╚═════╝░╚═╝░░╚═╝╚═╝░░░░░╚═╝╚══════╝╚═╝░╚════╝░╚═╝░░╚═╝░░░╚═╝░░░╚═╝░░╚═╝");
         Thread.sleep(1000);
+        //Generated with https://fsymbols.com/generators/carty/
     }
-
 }

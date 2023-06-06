@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Room {
+public class Room implements Serializable {
 
     public ArrayList<Item> items; //The items able to be searched and found in a room by a player
     public ArrayList<Game.Direction> doors; //The directions that have exits to another room or elsewhere, should always have at least 1 direction

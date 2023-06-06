@@ -1,2 +1,4 @@
-Level = 1
-Name = Zack
+Stage = 1
+Text Speed = 25
+
+Inventory

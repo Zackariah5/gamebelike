@@ -1,4 +1,6 @@
-public class HealingItem extends Item {
+import java.io.Serializable;
+
+public class HealingItem extends Item implements Serializable {
 
     public int percentHeal;
 

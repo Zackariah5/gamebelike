@@ -1,10 +1,17 @@
-public abstract class Item {
+import java.io.Serializable;
 
-    public String name, description;
+public abstract class Item implements Serializable {
 
-    public Item(String name, String description) {
+    public String name;
+    protected String details;
+
+    public Item(String name, String details) {
         this.name = name;
-        this.description = description;
+        this.details = details;
+    }
+
+    public String toString() {
+        return name;
     }
 
 }
