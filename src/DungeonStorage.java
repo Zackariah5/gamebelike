@@ -6,7 +6,7 @@ public class DungeonStorage {
 
     public DungeonStorage() {
         Dungeon dungeonOne = new Dungeon(5, 5, 4, 2);
-        ArrayList<Item> empty = new ArrayList<>();
+        ArrayList<Weapon> empty = new ArrayList<>();
         ArrayList<Game.Direction> r1Doors = new ArrayList<>();
         r1Doors.add(Game.Direction.EAST);
         r1Doors.add(Game.Direction.WEST);

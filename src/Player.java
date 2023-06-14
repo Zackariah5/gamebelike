@@ -1,12 +1,11 @@
-import java.io.*;
 import java.util.ArrayList;
 
-public class Player implements Serializable {
+public class Player {
 
     public String name;
     public int maxHealth, health;
-    transient public Weapon equippedWeapon;
-    transient public ArrayList<Item> inventory = new ArrayList<>();
+    public Weapon equippedWeapon;
+    public ArrayList<Weapon> inventory = new ArrayList<>();
 
     public Player(String name) {
         this.name = name;
@@ -32,7 +31,7 @@ public class Player implements Serializable {
     public void takeDamage(int amount) {
         health -= amount;
         if (health <= 0) {
-            health = 0;
+            health = -1;
         }
     }
 
@@ -50,18 +49,6 @@ public class Player implements Serializable {
             Thread.sleep(Game.textSpeed);
         }
         System.out.println();
-    }
-
-    public void save() throws IOException {
-        try {
-            FileOutputStream fos = new FileOutputStream("Player.bin");
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(this);
-            oos.close();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public String toString() {

@@ -1,10 +1,8 @@
 //Game Created, Written, and Coded By Zachary Copans
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -15,19 +13,32 @@ public class Game {
     public static String name = "";
     public static int textSpeed = 25;
     public static Scanner input = new Scanner(System.in);
-    public static String[] endings = new String[]{"Bad Ending", "Neutral Ending", "Good Ending", "Refusal Ending ", ""};
+    public static String[] endings = new String[]{"Bad Ending", "Neutral Ending", "Good Ending", "", ""};
     public static boolean[] endingsCompleted = new boolean[endings.length];
     public static Player player = new Player(name);
     public static Dungeon currentDungeon;
-    public static ArrayList<Item> availableItems = new ArrayList<>();
+    public static ArrayList<Weapon> availableItems = new ArrayList<>();
+    public static boolean[] hasWeapon = new boolean[10];
+
     public enum Direction {NORTH, SOUTH, EAST, WEST}
 
     public static void main(String[] args) throws InterruptedException, IOException, ClassNotFoundException {
         new DungeonStorage();
-
-        availableItems.add(new Weapon("Basic Sword", "A basic sword made of flimsy steel.", 25, 5, 10));
-
-
+        //Starting Weapon
+        availableItems.add(new Weapon("Bubble Baton", 10, 2, 10));
+        //First Dungeon Weapons
+        availableItems.add(new Weapon("Quick Quarterstaff", 0, 0, 0));
+        availableItems.add(new Weapon("Heap Handgun", 0, 0, 0));
+        //Second Dungeon Weapons
+        availableItems.add(new Weapon("Stooge Shotgun", 25, 15, 20));
+        availableItems.add(new Weapon("Selection Scythe", 35, 5, 8));
+        availableItems.add(new Weapon("Shell Sickle", 20, 3, 5));
+        //Third Dungeon Weapons
+        availableItems.add(new Weapon("Merge Machete", 0, 5, 0));
+        availableItems.add(new Weapon("Radix Rifle", 0, 0, 0));
+        availableItems.add(new Weapon("Insertion Incinerator", 20, 15, 10));
+        //Secret Weapon
+        availableItems.add(new Weapon("Bogo Bazooka", Integer.MAX_VALUE, 0, Integer.MAX_VALUE));
         //title();
         //anythingToContinue();
         menu();
@@ -52,9 +63,7 @@ public class Game {
                     doctor.speak("Holy shit! You're awake!");
                     player.speak("Where the hell am I?");
                     doctor.speak("Listen, I know you probably have a lot of questions right now, but I need you to tell me what you remember first. Let's start easy.\nWhat is your name?");
-
-                     */
-                    input.nextLine();
+                    */
                     name = input.nextLine();
                     player.name = name;
                     /*
@@ -117,18 +126,10 @@ public class Game {
                     }
                     player.speak("Yes.");
                     doctor.speak("Fantastic. Let's get you started. Take this sword.");
-
-                     */
-                    player.inventory.add(new Weapon("Basic Sword", "A basic sword made of flimsy steel.", 25, 5, 10));
-                    /*
                     dramaticText("You received a Basic Sword!");
                     dramaticText("*To equip a weapon, go to your inventory and select your desired weapon.*");
                     anythingToContinue();
                     doctor.speak("Take this as well, use it if you need.");
-
-                     */
-                    player.inventory.add(new HealingItem("First Aid Kit", "A kit containing all necessary materials for healing wounds. Heals 100% of your health when consumed.", 100));
-                    /*
                     dramaticText("You received a First Aid Kit!");
                     dramaticText("*To use an item or see what it does, go to your inventory and select your desired item.*");
                     anythingToContinue();
@@ -137,8 +138,7 @@ public class Game {
                     doctor.speak("Focus, " + name + ". When you're ready to come back, press this button on wrist.\nUse it sparingly, we only have enough charge for the exact amount of trips we need.\nI'm sending you now. Good luck.");
                     dramaticText("Suddenly, you begin to feel a floating sensation, as everything around you goes white. You wait.");
                     pause(3);
-
-                     */
+                    */
                     stage++;
                     saveGame("Save.txt");
                     anythingToContinue();
@@ -154,8 +154,9 @@ public class Game {
         PrintWriter output = new PrintWriter(new FileWriter(fileName, false));
         output.println("Stage = " + stage);
         output.println("Text Speed = " + textSpeed);
-        player.save();
-        currentDungeon.save();
+        for (int i = 0; i < hasWeapon.length; i++) {
+            output.println(hasWeapon[i]);
+        }
         output.close();
     }
 
@@ -166,30 +167,12 @@ public class Game {
         stage = Integer.parseInt(line.substring(line.indexOf("=") + 2));
         line = textInput.nextLine();
         textSpeed = Integer.parseInt(line.substring(line.indexOf("=") + 2));
-        textInput.close();
-        currentDungeon = loadDungeon();
-        player = loadPlayer();
-    }
-
-    public static Player loadPlayer() throws IOException, ClassNotFoundException {
-        Player tempPlayer = null;
-        try {
-            FileInputStream fis = new FileInputStream("Player.tmp");
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            tempPlayer = (Player) ois.readObject();
-            ois.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (int i = 0; i < hasWeapon.length; i++) {
+            line = textInput.nextLine();
+            hasWeapon[i] = line.equalsIgnoreCase("true");
         }
-        return tempPlayer;
-    }
 
-    public static Dungeon loadDungeon() throws IOException, ClassNotFoundException {
-        FileInputStream fis = new FileInputStream("Dungeon.tmp");
-        ObjectInputStream ois = new ObjectInputStream(fis);
-        Dungeon tempDungeon = (Dungeon) ois.readObject();
-        ois.close();
-        return tempDungeon;
+        textInput.close();
     }
 
     public static void menu() throws IOException, ClassNotFoundException {
@@ -242,19 +225,23 @@ public class Game {
                         case 3 -> currentDungeon.move(Direction.SOUTH);
                         case 4 -> currentDungeon.move(Direction.WEST);
                     }
+                    switch (randomNumber(1, 3)) {
+                        case 1:
+                            randomEncounter(stage);
+                            break;
+
+                    }
                 }
                 case 2 -> searchRoom(currentDungeon.getRoom());
                 case 3 -> {
                     displayInventory();
                     int chosenItemIndex = (userInput("What item would you like to use or inspect?", player.inventory.size() + 1)) - 1;
                     if (chosenItemIndex != player.inventory.size()) {
-                        if (player.inventory.get(chosenItemIndex) instanceof Weapon) {
-                            if (player.inventory.get(chosenItemIndex).equals(player.equippedWeapon)) {
-                                System.out.println("This is your currently equipped weapon.");
-                            } else {
-                                if (userInput("Would you like to equip " + player.inventory.get(chosenItemIndex) + " as your weapon?\n1. Yes\n2. No", 2) == 1) {
-                                    player.equippedWeapon = (Weapon) player.inventory.get(chosenItemIndex);
-                                }
+                        if (player.inventory.get(chosenItemIndex).equals(player.equippedWeapon)) {
+                            System.out.println("This is your currently equipped weapon.");
+                        } else {
+                            if (userInput("Would you like to equip " + player.inventory.get(chosenItemIndex) + " as your weapon?\n1. Yes\n2. No", 2) == 1) {
+                                player.equippedWeapon = player.inventory.get(chosenItemIndex);
                             }
                         }
                     }
@@ -296,7 +283,7 @@ public class Game {
     }
 
     public static void searchRoom(Room room) {
-        ArrayList<Item> itemsFound = new ArrayList<>();
+        ArrayList<Weapon> itemsFound = new ArrayList<>();
         if (room.items.size() == 0) {
             System.out.println("There are no items to be found.");
         } else {
@@ -350,4 +337,34 @@ public class Game {
         Thread.sleep(1000);
         //Generated with https://fsymbols.com/generators/carty/
     }
+
+    public static void randomEncounter(int stage) throws InterruptedException {
+        Enemy enemy = new Enemy("Gremladite", 50 * stage, 25 * stage, 10 * stage, (4-stage) * 5);
+        dramaticText("You encountered a " + enemy.name + "!");
+        boolean fight = true;
+        while (true) {
+            switch (userInput("What would you like to do?\n1. Attack\n2. Heal\n3. Run", 3)) {
+                case 1:
+                    enemy.takeDamage(player.attack());
+                    break;
+                case 2:
+                    enemy.heal(randomNumber((player.maxHealth/2) - 10, (player.maxHealth/2) + 10));
+                    break;
+                case 3:
+                    switch (randomNumber(1, 4)) {
+                        case 1:
+                            System.out.println("You couldn't escape!");
+                            break;
+                        default:
+
+                    }
+            }
+        }
+    }
+
+    private static int randomNumber(int min, int max) {
+        return ((int)(Math.random() * ((max-min) + 1))) + min;
+    }
+
+
 }

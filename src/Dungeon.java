@@ -1,9 +1,4 @@
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-
-public class Dungeon implements Serializable {
+public class Dungeon {
 
     public Room[][] rooms;
     public int row; //Row is 0 at top, height at bottom
@@ -36,18 +31,6 @@ public class Dungeon implements Serializable {
             }
         } else {
             System.out.println("There is no door in that direction.");
-        }
-    }
-
-    public void save() throws IOException {
-        try {
-            FileOutputStream fos = new FileOutputStream("Dungeon.bin");
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(this);
-            oos.close();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

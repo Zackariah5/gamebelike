@@ -1,4 +1,12 @@
 Stage = 1
 Text Speed = 25
-
-Inventory
+false
+false
+false
+false
+false
+false
+false
+false
+false
+false

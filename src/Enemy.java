@@ -3,10 +3,10 @@ public class Enemy {
   public String name;
   public int health, maxHealth, baseDamage, damageRange, critChance;
 
-  public Enemy(String name, int health, int maxHealth, int baseDamage, int damageRange, int critChance) {
+  public Enemy(String name, int health, int baseDamage, int damageRange, int critChance) {
     this.name = name;
     this.health = health;
-    this.maxHealth = maxHealth;
+    maxHealth = health;
     this.baseDamage = baseDamage;
     this.damageRange = damageRange;
     this.critChance = critChance;
@@ -24,6 +24,20 @@ public class Enemy {
       damage = (int)(tempDamage);
     }
     return damage;
+  }
+
+  public void takeDamage(int amount) {
+    health -= amount;
+    if (health <= 0) {
+      health = -1;
+    }
+  }
+
+  public void heal(int amount) {
+    health += amount;
+    if (health > maxHealth) {
+      health = maxHealth;
+    }
   }
 
   private int randomNumber(int min, int max) {
