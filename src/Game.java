@@ -1,5 +1,4 @@
 //Game Created, Written, and Coded By Zachary Copans
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,26 +8,22 @@ import java.util.Scanner;
 
 public class Game {
 
-    public static int stage;
     public static String name = "";
+    public static int stage;
     public static int textSpeed = 25;
     public static Scanner input = new Scanner(System.in);
-    public static String[] endings = new String[]{"Bad Ending", "Neutral Ending", "Good Ending", "", ""};
-    public static boolean[] endingsCompleted = new boolean[endings.length];
     public static Player player = new Player(name);
     public static Dungeon currentDungeon;
     public static ArrayList<Weapon> availableItems = new ArrayList<>();
-    public static boolean[] hasWeapon = new boolean[10];
 
     public enum Direction {NORTH, SOUTH, EAST, WEST}
 
     public static void main(String[] args) throws InterruptedException, IOException, ClassNotFoundException {
-        new DungeonStorage();
         //Starting Weapon
         availableItems.add(new Weapon("Bubble Baton", 10, 2, 10));
         //First Dungeon Weapons
-        availableItems.add(new Weapon("Quick Quarterstaff", 0, 0, 0));
-        availableItems.add(new Weapon("Heap Handgun", 0, 0, 0));
+        availableItems.add(new Weapon("Quick Quarterstaff", 15, 3, 15));
+        availableItems.add(new Weapon("Heap Handgun", 25, 10, 5));
         //Second Dungeon Weapons
         availableItems.add(new Weapon("Stooge Shotgun", 25, 15, 20));
         availableItems.add(new Weapon("Selection Scythe", 35, 5, 8));
@@ -39,8 +34,9 @@ public class Game {
         availableItems.add(new Weapon("Insertion Incinerator", 20, 15, 10));
         //Secret Weapon
         availableItems.add(new Weapon("Bogo Bazooka", Integer.MAX_VALUE, 0, Integer.MAX_VALUE));
-        //title();
-        //anythingToContinue();
+        new DungeonStorage();
+        title();
+        anythingToContinue();
         menu();
         NPC doctor = new NPC("Dr. Pingry");
         if (stage == 0) doctor.name = "Doctor";
@@ -58,16 +54,18 @@ public class Game {
                     player.speak("HELLO??????");
                     pause(2);
                     dramaticText("Suddenly, you begin to hear footsteps coming your way.");
+                    input.nextLine();
                     anythingToContinue();
                     dramaticText("The door adjacent to the bed opens, revealing a doctor.");
                     doctor.speak("Holy shit! You're awake!");
                     player.speak("Where the hell am I?");
                     doctor.speak("Listen, I know you probably have a lot of questions right now, but I need you to tell me what you remember first. Let's start easy.\nWhat is your name?");
                     */
+                    input.nextLine();
                     name = input.nextLine();
                     player.name = name;
-                    /*
                     player.speak("I'm " + player + ".");
+                    /*
                     doctor.speak("Okay, that's what we have on file, so that's good.\nAnd what year do you remember it being?");
                     player.speak("2023.");
                     doctor.speak("Oh my, well, I'm not sure how to tell you this, but it's 2132.");
@@ -125,13 +123,12 @@ public class Game {
                         //Gain refusal ending
                     }
                     player.speak("Yes.");
-                    doctor.speak("Fantastic. Let's get you started. Take this sword.");
-                    dramaticText("You received a Basic Sword!");
+                    doctor.speak("Fantastic. Let's get you started. Take this baton.");
+                    */
+                    dramaticText("You received a Bubble Baton!");
+                    player.inventory.add(availableItems.get(0));
+                    /*
                     dramaticText("*To equip a weapon, go to your inventory and select your desired weapon.*");
-                    anythingToContinue();
-                    doctor.speak("Take this as well, use it if you need.");
-                    dramaticText("You received a First Aid Kit!");
-                    dramaticText("*To use an item or see what it does, go to your inventory and select your desired item.*");
                     anythingToContinue();
                     doctor.speak("Here's the deal. In order to break into the dungeon we think your wife is,\nyou need to investigate some of their smaller bases first.\nIf you don't have any other questions, I can teleport you there now.");
                     player.speak("You can teleport people now? That's so sick.");
@@ -152,26 +149,32 @@ public class Game {
 
     public static void saveGame(String fileName) throws IOException {
         PrintWriter output = new PrintWriter(new FileWriter(fileName, false));
+        output.println("Name = " + player.name);
         output.println("Stage = " + stage);
         output.println("Text Speed = " + textSpeed);
-        for (int i = 0; i < hasWeapon.length; i++) {
-            output.println(hasWeapon[i]);
+        for (int i = 0; i < availableItems.size(); i++) {
+            output.println(player.inventory.contains(availableItems.get(i)));
         }
         output.close();
+        System.out.println("Game Saved.");
     }
 
-    public static void loadGame(String fileName) throws IOException, ClassNotFoundException {
+    public static void loadGame(String fileName) throws IOException {
         File inFile = new File(fileName);
         Scanner textInput = new Scanner(inFile);
         String line = textInput.nextLine();
+        player.name = line.substring(line.indexOf("=") + 2);
+        line = textInput.nextLine();
         stage = Integer.parseInt(line.substring(line.indexOf("=") + 2));
+        currentDungeon = DungeonStorage.dungeons[stage-1];
         line = textInput.nextLine();
         textSpeed = Integer.parseInt(line.substring(line.indexOf("=") + 2));
-        for (int i = 0; i < hasWeapon.length; i++) {
+        for (int i = 0; i < availableItems.size(); i++) {
             line = textInput.nextLine();
-            hasWeapon[i] = line.equalsIgnoreCase("true");
+            if (line.equalsIgnoreCase("true")) {
+                player.inventory.add(availableItems.get(i));
+            }
         }
-
         textInput.close();
     }
 
@@ -213,8 +216,9 @@ public class Game {
         }
     }
 
-    public static void gameLoop() throws IOException {
+    public static void gameLoop() throws IOException, InterruptedException {
         boolean complete = false;
+        player.inventory.add(availableItems.get(0));
         while (true) {
             currentDungeon.getRoom().display();
             switch (userInput("What would you like to do?\n1. Move\n2. Search Room\n3. Inventory\n4. Leave", 4)) {
@@ -225,11 +229,8 @@ public class Game {
                         case 3 -> currentDungeon.move(Direction.SOUTH);
                         case 4 -> currentDungeon.move(Direction.WEST);
                     }
-                    switch (randomNumber(1, 3)) {
-                        case 1:
-                            randomEncounter(stage);
-                            break;
-
+                    if (randomNumber(1, 3) == 1) {
+                        randomEncounter(stage);
                     }
                 }
                 case 2 -> searchRoom(currentDungeon.getRoom());
@@ -255,7 +256,7 @@ public class Game {
                     return;
                 }
             }
-            if (complete == true) {
+            if (complete) {
                 return;
             }
         }
@@ -311,7 +312,7 @@ public class Game {
         System.out.println();
     }
 
-    public static void pause(int seconds) throws InterruptedException {
+    public void pause(int seconds) throws InterruptedException {
         for (int i = 0; i < seconds; i++) {
             Thread.sleep(1000);
             System.out.print(".");
@@ -340,24 +341,44 @@ public class Game {
 
     public static void randomEncounter(int stage) throws InterruptedException {
         Enemy enemy = new Enemy("Gremladite", 50 * stage, 25 * stage, 10 * stage, (4-stage) * 5);
-        dramaticText("You encountered a " + enemy.name + "!");
+        dramaticText("You encountered a " + enemy + "!");
         boolean fight = true;
-        while (true) {
+        while (fight) {
+            System.out.println("Your Health: " + player.health);
+            System.out.println(enemy + " Health: " + enemy.health);
             switch (userInput("What would you like to do?\n1. Attack\n2. Heal\n3. Run", 3)) {
-                case 1:
-                    enemy.takeDamage(player.attack());
-                    break;
-                case 2:
-                    enemy.heal(randomNumber((player.maxHealth/2) - 10, (player.maxHealth/2) + 10));
-                    break;
-                case 3:
-                    switch (randomNumber(1, 4)) {
-                        case 1:
-                            System.out.println("You couldn't escape!");
-                            break;
-                        default:
-
+                case 1 -> {
+                    int damage = player.attack();
+                    enemy.takeDamage(damage);
+                    System.out.println("You did " + damage + " damage!");
+                    if (enemy.health == 0) {
+                        System.out.println("You defeated the " + enemy + "!");
+                        input.nextLine();
+                        anythingToContinue();
+                        fight = false;
                     }
+                }
+                case 2 -> {
+                    int heal = randomNumber((player.maxHealth / 2) - 10, (player.maxHealth / 2) + 10);
+                    player.heal(heal);
+                    System.out.println("You healed " + heal + " health!");
+                }
+                case 3 -> {
+                    if (randomNumber(1, 4) == 1) {
+                        System.out.println("You couldn't escape!");
+                    } else {
+                        System.out.println("You escaped!");
+                        fight = false;
+                    }
+                }
+            }
+            if (fight) {
+                int enemyDamage = enemy.attack();
+                player.takeDamage(enemyDamage);
+                System.out.println("The " + enemy + " did " + enemyDamage + " damage to you!");
+                if (player.health == 0) {
+                    player.die();
+                }
             }
         }
     }
@@ -365,6 +386,5 @@ public class Game {
     private static int randomNumber(int min, int max) {
         return ((int)(Math.random() * ((max-min) + 1))) + min;
     }
-
 
 }

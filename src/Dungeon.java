@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Dungeon {
 
     public Room[][] rooms;
@@ -31,6 +33,23 @@ public class Dungeon {
             }
         } else {
             System.out.println("There is no door in that direction.");
+        }
+    }
+
+    public void spreadItems(ArrayList<Weapon> items) {
+        for (int i = 0; i < items.size(); i++) {
+            int tempRow;
+            int tempCol;
+            while (true) {
+                tempRow = randomNumber(0, rooms.length - 1);
+                tempCol = randomNumber(0, rooms[0].length - 1);
+                if (rooms[tempRow][tempCol] != null) {
+                    rooms[tempRow][tempCol].items.add(items.get(i));
+                    items.remove(i);
+                    i--;
+                    break;
+                }
+            }
         }
     }
 

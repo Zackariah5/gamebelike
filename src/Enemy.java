@@ -19,7 +19,6 @@ public class Enemy {
       crit = true;
     }
     if (crit) {
-      System.out.println("A critical hit!");
       double tempDamage = (double)(damage) * 1.75;
       damage = (int)(tempDamage);
     }
@@ -29,7 +28,7 @@ public class Enemy {
   public void takeDamage(int amount) {
     health -= amount;
     if (health <= 0) {
-      health = -1;
+      health = 0;
     }
   }
 
@@ -38,6 +37,10 @@ public class Enemy {
     if (health > maxHealth) {
       health = maxHealth;
     }
+  }
+
+  public String toString() {
+    return name;
   }
 
   private int randomNumber(int min, int max) {

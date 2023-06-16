@@ -15,6 +15,10 @@ public class Player {
     }
 
     public int attack() {
+        if (equippedWeapon == null) {
+            System.out.println("You don't have a weapon equipped! You have to run!");
+            return 0;
+        }
         boolean crit = false;
         int damage = randomNumber(equippedWeapon.baseDamage - equippedWeapon.damageRange, equippedWeapon.baseDamage + equippedWeapon.damageRange);
         if (randomNumber(1, equippedWeapon.critChance) == 1) {
@@ -31,7 +35,7 @@ public class Player {
     public void takeDamage(int amount) {
         health -= amount;
         if (health <= 0) {
-            health = -1;
+            health = 0;
         }
     }
 
@@ -49,6 +53,11 @@ public class Player {
             Thread.sleep(Game.textSpeed);
         }
         System.out.println();
+    }
+
+    public void die() {
+        System.out.println("You died. You can try again from your last save. Thanks for playing!");
+        System.exit(0);
     }
 
     public String toString() {
