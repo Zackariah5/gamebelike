@@ -2,8 +2,8 @@ Name = Zack
 Stage = 1
 Text Speed = 25
 true
-false
-false
+true
+true
 false
 false
 false

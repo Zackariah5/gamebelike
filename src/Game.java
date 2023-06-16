@@ -43,7 +43,6 @@ public class Game {
         while (true) {
             switch (stage) {
                 case 0:
-                    /*
                     dramaticText("You wake up in a hospital bed, your body feeling lighter than usual. With so many wires hooked up to you, there's no way you can leave the bed. You call out for help.");
                     player.speak("Hello?");
                     pause(5);
@@ -60,12 +59,10 @@ public class Game {
                     doctor.speak("Holy shit! You're awake!");
                     player.speak("Where the hell am I?");
                     doctor.speak("Listen, I know you probably have a lot of questions right now, but I need you to tell me what you remember first. Let's start easy.\nWhat is your name?");
-                    */
                     input.nextLine();
                     name = input.nextLine();
                     player.name = name;
                     player.speak("I'm " + player + ".");
-                    /*
                     doctor.speak("Okay, that's what we have on file, so that's good.\nAnd what year do you remember it being?");
                     player.speak("2023.");
                     doctor.speak("Oh my, well, I'm not sure how to tell you this, but it's 2132.");
@@ -124,10 +121,8 @@ public class Game {
                     }
                     player.speak("Yes.");
                     doctor.speak("Fantastic. Let's get you started. Take this baton.");
-                    */
                     dramaticText("You received a Bubble Baton!");
                     player.inventory.add(availableItems.get(0));
-                    /*
                     dramaticText("*To equip a weapon, go to your inventory and select your desired weapon.*");
                     anythingToContinue();
                     doctor.speak("Here's the deal. In order to break into the dungeon we think your wife is,\nyou need to investigate some of their smaller bases first.\nIf you don't have any other questions, I can teleport you there now.");
@@ -135,7 +130,6 @@ public class Game {
                     doctor.speak("Focus, " + name + ". When you're ready to come back, press this button on wrist.\nUse it sparingly, we only have enough charge for the exact amount of trips we need.\nI'm sending you now. Good luck.");
                     dramaticText("Suddenly, you begin to feel a floating sensation, as everything around you goes white. You wait.");
                     pause(3);
-                    */
                     stage++;
                     saveGame("Save.txt");
                     anythingToContinue();
@@ -218,7 +212,6 @@ public class Game {
 
     public static void gameLoop() throws IOException, InterruptedException {
         boolean complete = false;
-        player.inventory.add(availableItems.get(0));
         while (true) {
             currentDungeon.getRoom().display();
             switch (userInput("What would you like to do?\n1. Move\n2. Search Room\n3. Inventory\n4. Leave", 4)) {
@@ -312,7 +305,7 @@ public class Game {
         System.out.println();
     }
 
-    public void pause(int seconds) throws InterruptedException {
+    public static void pause(int seconds) throws InterruptedException {
         for (int i = 0; i < seconds; i++) {
             Thread.sleep(1000);
             System.out.print(".");
