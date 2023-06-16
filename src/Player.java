@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class Player {
 
     public String name;
-    public int maxHealth, health;
+    public int maxHealth, health, xp, level;
     public Weapon equippedWeapon;
     public ArrayList<Weapon> inventory = new ArrayList<>();
 
@@ -12,6 +12,8 @@ public class Player {
         maxHealth = 100;
         health = maxHealth;
         equippedWeapon = null;
+        xp = 0;
+        level = 1;
     }
 
     public int attack() {
@@ -45,6 +47,15 @@ public class Player {
             health = maxHealth;
         }
     }
+
+    public void gainXP(int xp) throws InterruptedException {
+        this.xp += xp;
+        if ((xp / 1000) + 1 != level) {
+            level = (xp / 1000) + 1;
+            Game.dramaticText("You leveled up to level + " + level + "!");
+        }
+    }
+
 
     public void speak(String text) throws InterruptedException {
         System.out.print("You: ");
